@@ -1,22 +1,26 @@
+
+#ユーザー名とパスワードの変数をwhile文の外へ移動した。
+username = None
+passw = None
+
 while True:
-    login = input("Type username:")
+    username = input("Type username:") #login変数名をusernameに変更した。
     passw = input("Type your password:")
-    confirm = input("Confirme your password:")
-    if passw in confirm:
-        print("Subscription conclude")
+    pwCheck = input("Confirm your password:") #confirm変数名をpwCheckに変更した。
+    if passw == pwCheck:  #変更前の「if passw in confirm:」は特定の部分文字列が存在するかを調べる
+        print("Subscription completed") #concludeをcompletedに変更した
         print("-------------------")
         break
     else:
         print("Error in password confirmation")
 
 
-user = login
-password = passw
+#userとpasswordの変数を削除した。
 
 
 def logar_in(user, password):
-    log1 = input("Login:")
-    pass1 = input("Password:")
+    log1 = input("Enter your username:") #画面表示テキストを変えました
+    pass1 = input("Enter your password:") #画面表示テキストを変えました
     if user == log1 and password == pass1:
         print("Welcome to your Account")
         print("--------( ^ _ ^ )-----------")
@@ -25,5 +29,5 @@ def logar_in(user, password):
         print("*********( -_- )*********")
 
 
-print("Subscribe")
-logar_in(user, password)
+print("Login") #SubscribeをLoginに変更した
+logar_in(username,passw) #変更後の変数名に直した
