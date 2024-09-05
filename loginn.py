@@ -25,4 +25,5 @@ def logar_in(user, password):
         print("*********( -_- )*********")
 
 
+print("Subscribe")
 logar_in(user, password)
