@@ -34,7 +34,8 @@ while True:
     
     print("-"*60)
     if PlayerChoose + MachineChoice + MachineChoose == Adivin:
-        print(f"You win! Sophia choose {Sophia} and Laura choose{Laura}")
+        print(f"You win! Sophia choose {MachineChoice} and Laura \
+choose{MachineChoose}")
         playerP += 1
     else:
         print(f"You lose! Sophia choose: {MachineChoice} and Laura \

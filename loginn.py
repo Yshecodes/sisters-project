@@ -31,5 +31,5 @@ def logar_in(user, password):
 
 
 print("Login")  # SubscribeをLoginに変更した Aqui era soh p testar o Gitpush
-logar_in(username, passw)  # 変更後の変数名に直した  Aqui soh tinha faltado 
+logar_in(username,passw)  # 変更後の変数名に直した  Aqui soh tinha faltado 
 # um espaco depois do username, passw por isso estava vermelho
