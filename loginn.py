@@ -19,10 +19,10 @@ while True:
 # userとpasswordの変数を削除した。Ok
 
 
-def logar_in(user, password):
+def logar_in(u, password):
     log1 = input("Enter your username:")  # 画面表示テキストを変えました Ok
     pass1 = input("Enter your password:")  # 画面表示テキストを変えました Ok
-    if user == log1 and password == pass1:
+    if u == log1 and password == pass1:
         print("Welcome to your Account")
         print("--------( ^ _ ^ )--------")
     else:

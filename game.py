@@ -9,7 +9,6 @@ def player_choice():
     playerC = int(input(f"Voce tem {len(playerChoice) - 1} palitos. Quantos palitos estarao na sua mao? > "))
     return playerC
 
-
 def adivinha():
     adivinhando = int(input("Adivinhe quantos palitos tem ao todo:"))
     return adivinhando
@@ -87,9 +86,10 @@ chose: {machineLaura}, you have {PlayerChose}. Total is {total}! Laura won this 
 
     print("-"*60)
 
-#Todo implementar uma funcao pra chamar game start
-chosetoplay = input("Quer começar uma nova partida?") 
+# Todo implementar uma funcao pra chamar game start
+chosetoplay = input("Quer começar uma nova partida?")
 if chosetoplay in ("Sim", "sim", "s", "S"):
-        pass
+    pass
 elif chosetoplay in ("Nao" "nao", "n", "N"):
     print("Até a próxima!")
+
