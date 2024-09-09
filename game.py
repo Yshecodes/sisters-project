@@ -95,9 +95,9 @@ while True:
     print("-"*60)
     
     if game_over: 
-        play_again = input("Quer começar uma nova partida?").lower()
-        if play_again not in ("sim", "s"):
-            print("Até a próxima!")
+        play_again = input("Do you want to play again?").lower()  
+        if play_again not in ("yes"):  # mudei pra Yes
+            print("See you next time!")  # Esse aqui nao sei como ficaria mais legal See you next time?
             break
         else: 
             player_hand = [0, 1, 2, 3]
