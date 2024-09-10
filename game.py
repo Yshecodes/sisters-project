@@ -1,119 +1,171 @@
 from random import choice
 
-player_score = 0
-sophia_score = 0
-laura_score = 0
-player_hand = [0, 1, 2, 3]
-sophia_hand = [0, 1, 2, 3]
-laura_hand = [0, 1, 2, 3]
+players = {
+"player1": {
+    "name": None,
+    "hand": [0, 1, 2, 3],
+    "guess": None,
+    "score" : 0
+},
+"player2": {
+    "name": "Sophia",
+    "hand": [0, 1, 2, 3],
+    "guess": None,
+    "score" : 0
+},
+"player3": {
+    "name": "Laura",
+    "hand": [0, 1, 2, 3],
+    "guess": None,
+    "score" : 0
+}
+}
 
+player_names = list(players.keys())
+current_player = choice(player_names)
+current_index = player_names.index(current_player) % len(player_names)
 
-def get_player_throw():
+def rotate_turns(player_names, current_index):
+    current_index = (current_index + 1) % len(player_names)
+    return current_index
+
+def get_player_throw(players, key):
     while True:
-        value = int(input(f"Voce tem {len(player_hand) - 1} palitos. \
+        value = int(input(f"Voce tem {len(players[key]['hand']) - 1} palitos. \
 Quantos palitos estarao na sua mao? "))
         limit_number = 0
-        if value in player_hand:
-            return value
-            break
+        if value in players[key]['hand']:
+            return value #breakを削除しました. returnはすでにloopを止めて関数を出る
         elif (value) < (limit_number):
             print("Please enter a valid number from 0 to 3")
         else:
             print("Please enter a valid number")
-        
-
-def get_sophia_throw():
-    return choice(sophia_hand)
 
 
-def get_laura_throw():
-    return choice(laura_hand)
+def get_player2_throw(players, key):
+    return choice(players[key]['hand'])
+
+
+def get_player3_throw(players, key):
+    return choice(players[key]['hand'])
 
 
 def get_player_guess():
-    return int(input("Adivinhe quantos palitos tem ao todo: "))
+    guess = int(input("Adivinhe quantos palitos tem ao todo: "))
+    return guess 
 
 
-def get_sophia_guess():
+def get_player2_guess(player2_throw, existing_guesses):
     while True:
-        guess = choice(player_hand) + choice(laura_hand) + sophia_throw
-        if(guess != player_guess):
+        guess = choice(players['player1']['hand']) + choice(players['player3']['hand']) + player2_throw
+        if guess not in existing_guesses:
             return guess
 
 
-def laura_turn_guess():
+def get_player3_guess(player3_throw, existing_guesses):
     while True:
-        guess = choice(player_hand) + choice(sophia_hand) + laura_throw
-        if guess != player_guess and guess != sophia_guess:
+        guess = choice(players['player1']['hand']) + choice(players['player2']['hand']) + player3_throw
+        if guess not in existing_guesses:
             return guess
-
-
-while True:
-    print("-" * 60)
-
-    player_throw = get_player_throw()
-    sophia_throw = get_sophia_throw()
-    laura_throw = get_laura_throw()
-    
-    print("Vôce está jogando com Sophia e Laura, cada uma pode ter de 0 a 3 palitos.")
-    
-    player_guess = get_player_guess()
-    sophia_guess = get_sophia_guess()
-    laura_guess = laura_turn_guess()
-    
-    print("-"*60)
-    
-    total_of_sticks = player_throw + sophia_throw + laura_throw
-    
-    print(f"Your guess: {player_guess}. Sophia's guess: {sophia_guess}. Laura's guess: {laura_guess}.")
-    
-    game_over = False
-    
-    if total_of_sticks == player_guess:
-        print(f"You win! Sophia threw {sophia_throw}. Laura threw {laura_throw}. You threw {player_throw}. Total is {total_of_sticks}! Great guess!")
-        player_score += 1
-        if player_hand:
-            player_hand.pop()
-        if (len(player_hand) - 1) == 0:
-            print("CONGRATULATIONS! You won!")
-            game_over = True
-
-    elif total_of_sticks == sophia_guess:
-        print(f"You lose! Sophia threw: {sophia_throw}. Laura threw: {laura_throw}. You threw {player_throw}. Total is {total_of_sticks}! Sophia got this one!")
-        sophia_score += 1
-        if sophia_hand:
-            sophia_hand.pop()
-        if (len(sophia_hand) - 1) == 0:
-            print("GAME OVER! Sophia won!")
-            game_over = True
-
-    elif total_of_sticks == laura_guess:
-        print(f"You lose! Sophia threw: {sophia_throw}. Laura threw: {laura_throw}. You threw {player_throw}. Total is {total_of_sticks}! Laura won this one!")
-        laura_score += 1
-        if laura_hand:
-            laura_hand.pop()
-        if (len(laura_hand) - 1) == 0:
-            print("GAME OVER! Laura won!") 
-            game_over = True
-
-    else: 
-        print("No one guessed it right!")
         
-    print("-"*60)
-    print(f"Your Score {player_score}")
-    print(f"Sophia's Score {sophia_score}")
-    print(f"Laura's Score {laura_score}")
-    print("-"*60)
+def reset_players_attributes(players):
+    for player_key in players:
+        players[player_key]['hand'] = [0, 1, 2, 3]
+        players[player_key]['score'] = 0
+        players[player_key]['guess'] = None
+        
+
+
+def game_start(players, key, player_names, current_player, current_index, rotate_turns ):
+    print("-" * 60)
+    players['player1']['name'] = input("Hi! What's your name? ")
+    print(f"Welcome {players[key]['name']}! Let's play!")
+    print(f"{players[current_player]['name']} starts this time!")
+    print("Players choose your throw!")
     
-    if game_over: 
-        play_again = input("Do you want to play again?").lower()  
-        if play_again not in ("yes"):  # mudei pra Yes
-            print("See you next time!")  # Esse aqui nao sei como ficaria mais legal See you next time?
-            break
+    while True:
+        player1_throw = get_player_throw(players, "player1")
+        player2_throw = get_player2_throw(players, "player2")
+        player3_throw = get_player3_throw(players, "player3")
+    
+        total_of_sticks = player1_throw + player2_throw + player3_throw
+    
+        for _ in range(len(players)):
+            current_player_key = player_names[current_index]
+            existing_guesses = [players[p]['guess'] for p in player_names
+                            if players[p]['guess'] is not None]
+        
+            if current_player_key == "player1":
+                print(f"Your turn {players['player1']['name']}, what's  your guess?")
+                guess = get_player_guess()
+                players['player1']['guess'] = guess
+                existing_guesses.append(guess)
+                print(f"players{players['player1']['name']} guessed {guess}.")
+                
+            elif current_player_key == "player2":
+                print(f"Your turn {players['player2']['name']}, what's your guess?")
+                guess = get_player2_guess(player2_throw, existing_guesses)
+                players['player2']['guess'] = guess
+                existing_guesses.append(guess)
+                print(f"players{players['player2']['name']} guessed {guess}.")
+                
+            elif current_player_key == "player3":
+                print(f"Your turn {players['player3']['name']}, what's your guess?")
+                guess = get_player3_guess(player3_throw, existing_guesses)
+                players['player3']['guess'] = guess
+                existing_guesses.append(guess)
+                print(f"players{players['player3']['name']} guessed {guess}.")
+        
+            current_index = rotate_turns(player_names, current_index)
+        
+        game_over = False
+        
+        if total_of_sticks == players['player1']['guess']:
+            print(f"You win! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}! Great guess!")
+            players['player1']['score'] += 1
+            if players['player1']['hand']:
+                players['player1']['hand'].pop()
+            if (len(players['player1']['hand']) - 1) == 0:
+                print(f"CONGRATULATIONS {players['player1']['name']}! You won!")
+                game_over = True
+            
+        elif total_of_sticks == players['player2']['guess']:
+            print(f"You lose! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}! {players['player2']['name']} got this one!")
+            players['player2']['score'] += 1
+            if players['player2']['hand']:
+                players['player2']['hand'].pop()
+            if (len(players['player2']['hand']) - 1) == 0:
+                print(f"{players['player2']['name']} won! Better luck next time!")
+                game_over = True
+            
+        elif total_of_sticks == players['player3']['guess']:
+            print(f"You lose! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}! {players['player3']['name']} got this one!")
+            players['player3']['score'] += 1
+            if players['player3']['hand']:
+                players['player3']['hand'].pop()
+            if (len(players['player3']['hand']) - 1) == 0:
+                print(f"{players['player3']['name']} won! Better luck next time!")
+                game_over = True
+            
         else: 
-            player_hand = [0, 1, 2, 3]
-            sophia_hand = [0, 1, 2, 3]
-            laura_hand = [0, 1, 2, 3]
-            player_score = 0
-            sophia_score = 0
-            laura_score = 0
+            #Todo show how many each one threw
+            print("No one guessed it right!")
+            
+        print("-"*60)
+        print(f"{players['player1']['name']}'s Score {players['player1']['score']}")
+        print(f"{players['player2']['name']}'s Score {players['player2']['score']}")
+        print(f"{players['player3']['name']}'s Score {players['player3']['score']}")
+        print("-"*60)
+        
+        current_index = rotate_turns(player_names, current_index)
+    
+        if game_over: 
+            play_again = input("Play again?").lower()  
+            if play_again not in ("yes", "y"):
+                print("See you next time!") 
+                break
+            else:
+                #Todo reset to a new game order
+                reset_players_attributes(players) 
+
+game_start(players, 'player1', player_names, current_player, current_index, rotate_turns)
