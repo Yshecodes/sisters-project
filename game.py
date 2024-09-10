@@ -9,8 +9,18 @@ laura_hand = [0, 1, 2, 3]
 
 
 def get_player_throw():
-    return int(input(f"Voce tem {len(player_hand) - 1} palitos. Quantos palitos estarao na sua mao? "))
-
+    while True:
+        value = int(input(f"Voce tem {len(player_hand) - 1} palitos. \
+Quantos palitos estarao na sua mao? "))
+        limit_number = 0
+        if value in player_hand:
+            return value
+            break
+        elif (value) < (limit_number):
+            print("Please enter a valid number from 0 to 3")
+        else:
+            print("Please enter a valid number")
+        
 
 def get_sophia_throw():
     return choice(sophia_hand)
@@ -36,6 +46,7 @@ def laura_turn_guess():
         guess = choice(player_hand) + choice(sophia_hand) + laura_throw
         if guess != player_guess and guess != sophia_guess:
             return guess
+
 
 while True:
     print("-" * 60)
