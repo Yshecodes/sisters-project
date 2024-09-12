@@ -1,4 +1,5 @@
 from random import choice
+from time import sleep　#タイムモジュールからsleep()関数をインポートしました。
 
 players = {
 "player1": {
@@ -35,7 +36,7 @@ def get_player_throw(players, key):
 Quantos palitos estarao na sua mao? "))
         limit_number = 0
         if value in players[key]['hand']:
-            return value #breakを削除しました. returnはすでにloopを止めて関数を出る
+            return value
         elif (value) < (limit_number):
             print("Please enter a valid number from 0 to 3")
         else:
@@ -78,6 +79,7 @@ def reset_players_attributes(players):
 
 def game_start(players, key, player_names, current_player, current_index, rotate_turns ):
     print("-" * 60)
+    sleep(2) #ここでスリープ関数を使って、「2秒間待ってください」と指示した。 
     players['player1']['name'] = input("Hi! What's your name? ")
     print(f"Welcome {players[key]['name']}! Let's play!")
     print(f"{players[current_player]['name']} starts this time!")
