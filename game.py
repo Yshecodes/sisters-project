@@ -1,5 +1,5 @@
 from random import choice
-from time import sleep　#タイムモジュールからsleep()関数をインポートしました。
+from time import sleep   # タイムモジュールからsleep()関数をインポートしました。
 
 players = {
 "player1": {
@@ -69,17 +69,18 @@ def get_player3_guess(player3_throw, existing_guesses):
         if guess not in existing_guesses:
             return guess
         
-def reset_players_attributes(players):
+def reset_players_attributes(players, current_player):
     for player_key in players:
         players[player_key]['hand'] = [0, 1, 2, 3]
         players[player_key]['score'] = 0
         players[player_key]['guess'] = None
+        current_player = choice(player_names)
         
 
 
 def game_start(players, key, player_names, current_player, current_index, rotate_turns ):
     print("-" * 60)
-    sleep(2) #ここでスリープ関数を使って、「2秒間待ってください」と指示した。 
+    sleep(2) 
     players['player1']['name'] = input("Hi! What's your name? ")
     print(f"Welcome {players[key]['name']}! Let's play!")
     print(f"{players[current_player]['name']} starts this time!")
@@ -150,8 +151,8 @@ def game_start(players, key, player_names, current_player, current_index, rotate
                 game_over = True
             
         else: 
-            #Todo show how many each one threw
-            print("No one guessed it right!")
+            # Done
+            print(f"No one guessed it right! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}")
             
         print("-"*60)
         print(f"{players['player1']['name']}'s Score {players['player1']['score']}")
@@ -167,7 +168,8 @@ def game_start(players, key, player_names, current_player, current_index, rotate
                 print("See you next time!") 
                 break
             else:
-                #Todo reset to a new game order
-                reset_players_attributes(players) 
+                # Todo reset to a new game order
+                reset_players_attributes(players, current_player) 
+                
 
 game_start(players, 'player1', player_names, current_player, current_index, rotate_turns)
