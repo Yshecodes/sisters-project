@@ -1,0 +1,274 @@
+#:kivy 2.3.0
+
+ScreenManager:
+    MainScreen:
+    NameInputScreen:
+    GameThrow:
+    StartingPlayer:
+    UserGuess:
+    MachineGuess:
+    Winner:
+    Score:
+    GameOver:
+
+
+<MainScreen>:
+    name: 'main'
+
+    FloatLayout:
+
+        Image:
+            id: bg_img
+            source: 'palitoimg/chao.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+
+        Label:
+            text: 'Bem Vindo!'
+            font_size: '40sp'  # Adjust this size as needed
+            size_hint: (0.8, 0.1)  # Adjust width, height based on needs
+            pos_hint: {'center_x': 0.5, 'y': 0.7}  # Center horizontally
+            halign: 'center'
+            text_size: self.size  # This ensures proper text alignment inside the label
+
+    
+        Button:
+            id: btn1
+            text: 'Play!'
+            size_hint: (0.3, 0.1)
+            pos_hint: {'x': 0.35, 'y': 0.6}
+            halign: 'center'
+            on_press:
+                btn1.opacity = 0
+                btn1.disabled = True
+                root.manager.current = 'name_input'
+
+        BoxLayout:
+            id: rules_box
+            orientation: 'vertical'
+            padding: 10
+            spacing: 10
+            size_hint: (0.8, 0.4)
+            pos_hint: {'x': 0.1, 'y': 0.1}  # Center the box
+            
+            canvas.before:
+                Color:
+                    rgba: 0.3, 0.4, 0.5, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [10]      
+            Label:
+                text: 'GAME RULES'
+                font_size: 24
+                bold: True
+            Label:
+                text: '1. Every player begins the game with 3 sticks.'
+                font_size: 18
+            Label:
+                text: '2. You cannot say a guess already chosen by another player.'
+                font_size: 18
+            Label:
+                text: 'The first player with no sticks left win the game.'
+                font_size: 18
+                          
+<NameInputScreen>:
+    name: 'name_input'
+
+    FloatLayout:
+        Image:
+            id: hand1
+            source: 'palitoimg/gatinho1de1.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+            opacity: 1
+
+        Label:
+            text: "What's your name!"
+            font_size: '40sp'
+            size_hint: (0.4, 0.1)
+            pos_hint: {'x': 0.3, 'y': 0.7}
+            halign: 'center'
+            opacity: 1
+
+        TextInput:
+            id: name_input
+            size_hint: (0.4, 0.1)
+            font_size: '40sp'
+            pos_hint: {'x': 0.3, 'y': 0.6}
+            halign: 'center'
+            multiline: False
+            on_text_validate: root.on_enter()
+
+<GameThrow>:
+    name: 'game_throw'
+    FloatLayout:
+        Image:
+            id: hand1
+            source: 'palitoimg/gatinho1.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+            opacity: 1
+
+        Label:
+            text: "How many sticks are you hiding?"
+            font_size: '40sp'
+            size_hint: (0.4, 0.1)
+            halign: 'center'
+            pos_hint: {'x': 0.3, 'y': 0.7}
+            opacity: 1
+
+        TextInput:
+            id: throw
+            input_filter: 'int'
+            hint_text: 'Enter the number'
+            font_size: '40sp'
+            size_hint: (0.4, 0.1)
+            halign: 'center'
+            pos_hint: {'x': 0.3, 'y': 0.6}
+            multiline: False
+            on_text_validate: root.process_throw_input()
+            
+
+<StartingPlayer>:
+    name: 'starting_player'
+
+    FloatLayout:
+
+        Image:
+            id: bg_img
+            source: 'palitoimg/chao.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+
+        Label:
+            text: 'Starting player!'
+            font_size: '40sp'  # Adjust this size as needed
+            size_hint: (0.8, 0.1)  # Adjust width, height based on needs
+            pos_hint: {'center_x': 0.5, 'y': 0.7}  # Center horizontally
+            halign: 'center'
+            text_size: self.size
+
+<UserGuess>:
+    name: 'user_guess'
+    FloatLayout:
+        Image:
+            id: guess_img
+            source: 'palitoimg/gatinho2.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+            opacity: 1
+
+        Label:
+            text: "What's your guess?"
+            font_size: '40sp'
+            size_hint: (0.4, 0.1)
+            halign: 'center'
+            pos_hint: {'x': 0.3, 'y': 0.7}
+            opacity: 1
+
+        TextInput:
+            id: guess
+            input_filter: 'int'
+            hint_text: 'Enter the number'
+            font_size: '40sp'
+            size_hint: (0.4, 0.1)
+            halign: 'center'
+            pos_hint: {'x': 0.3, 'y': 0.6}
+            multiline: False
+            on_text_validate: root.on_enter()
+
+
+<MachineGuess>:
+    name: 'machine_guess'
+
+    FloatLayout:
+
+        Image:
+            id: bg_img
+            source: 'palitoimg/chao.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+
+        Label:
+            text: 'Machine guess!'
+            font_size: '40sp'  # Adjust this size as needed
+            size_hint: (0.8, 0.1)  # Adjust width, height based on needs
+            pos_hint: {'center_x': 0.5, 'y': 0.7}  # Center horizontally
+            halign: 'center'
+            text_size: self.size
+
+<Winner>:
+    name: 'winner'
+
+    FloatLayout:
+
+        Image:
+            id: bg_img
+            source: 'palitoimg/chao.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+
+        Label:
+            text: 'Winner!'
+            font_size: '40sp'  # Adjust this size as needed
+            size_hint: (0.8, 0.1)  # Adjust width, height based on needs
+            pos_hint: {'center_x': 0.5, 'y': 0.7}  # Center horizontally
+            halign: 'center'
+            text_size: self.size
+
+<Score>:
+    name: 'score'
+
+    FloatLayout:
+
+        Image:
+            id: bg_img
+            source: 'palitoimg/chao.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+
+        Label:
+            text: 'Score!'
+            font_size: '40sp'  # Adjust this size as needed
+            size_hint: (0.8, 0.1)  # Adjust width, height based on needs
+            pos_hint: {'center_x': 0.5, 'y': 0.7}  # Center horizontally
+            halign: 'center'
+            text_size: self.size
+
+<GameOver>:
+    name: 'game_over'
+
+    FloatLayout:
+
+        Image:
+            id: bg_img
+            source: 'palitoimg/chao.png'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'x': 0, 'y': 0}
+
+        Label:
+            text: 'Game Over!'
+            font_size: '40sp'  # Adjust this size as needed
+            size_hint: (0.8, 0.1)  # Adjust width, height based on needs
+            pos_hint: {'center_x': 0.5, 'y': 0.7}  # Center horizontally
+            halign: 'center'
+            text_size: self.size

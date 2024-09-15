@@ -1,195 +1,160 @@
 from random import choice
-from time import sleep   # タイムモジュールからsleep()関数をインポートしました。
+from time import sleep
+import re
+from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.label import Label
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.lang import Builder
+from kivy.properties import BooleanProperty
+from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.widget import Widget
+from game_state import GameState
 
-players = {
-"player1": {
-    "name": None,
-    "hand": [0, 1, 2, 3],
-    "guess": None,
-    "score" : 0
-},
-"player2": {
-    "name": "Sophia",
-    "hand": [0, 1, 2, 3],
-    "guess": None,
-    "score" : 0
-},
-"player3": {
-    "name": "Laura",
-    "hand": [0, 1, 2, 3],
-    "guess": None,
-    "score" : 0
-}
-}
+class MainScreen(Screen):
+    def on_button_press(self):
+        self.manager.current = 'name_input'
 
-#関数に変えました。
-def gen_starting_player(players):
-    player_names = list(players.keys())
-    current_player = choice(player_names)
-    current_index = player_names.index(current_player)
-    return player_names, current_player, current_index
+class NameInputScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.game_state = None
 
-def rotate_turns(player_names, current_index):
-    current_index = (current_index + 1) % len(player_names)
-    return current_index
+    def on_enter(self, *args):
+        self.game_state = App.get_running_app().game_state
+        self.ids.name_input.bind(on_text_validate=self.set_player_name)
+    
+    def set_player_name(self, *args):
+        name = self.ids.name_input.text
+        if name:
+            self.game_state.set_player_name('player1', name)
+            self.ids.name_input.text = ''
+            self.ids.name_input.opacity = 0
+            self.ids.name_input.disabled = True
+            self.game_state.reset_players_attributes()
+            self.game_state.gen_starting_player()
+            self.manager.current = 'game_throw'
 
-def get_player_throw(players, key):
-    while True:
-        value = int(input(f"Voce tem {len(players[key]['hand']) - 1} palitos. \
-Quantos palitos estarao na sua mao? "))
-        print("-" * 60)
-        limit_number = 0
-        if value in players[key]['hand']:
-            return value
-        elif (value) < (limit_number):
-            print("Please enter a valid number from 0 to 3")
+class GameThrow(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.game_state = None
+    
+    def on_enter(self, *args):
+        self.game_state = App.get_running_app().game_state
+        self.ids.throw.text = ''
+        player2_throw = self.game_state.get_machine_throw('player2')
+        self.game_state.set_machine_throw('player2', player2_throw)
+        player3_throw = self.game_state.get_machine_throw('player3')
+        self.game_state.set_machine_throw('player3', player3_throw)
+        self.ids.throw.bind(on_text_validate=self.process_throw_input)
+        
+    def process_throw_input(self, *args):
+        throw = self.ids.throw.text
+
+        if throw:
+            throw = int(throw)
+            self.game_state.set_player_throw('player1', throw)
+            self.ids.throw.text = ''
+            self.ids.throw.opacity = 0
+            self.ids.throw.disabled = True
+            self.manager.current = 'starting_player'
         else:
-            print("Please enter a valid number")
-
-
-def get_player2_throw(players, key):
-    return choice(players[key]['hand'])
-
-
-def get_player3_throw(players, key):
-    return choice(players[key]['hand'])
-
-
-def get_player_guess():
-    guess = int(input("Adivinhe quantos palitos tem ao todo: "))
-    return guess 
-
-
-def get_player2_guess(player2_throw, existing_guesses):
-    while True:
-        guess = choice(players['player1']['hand']) + choice(players['player3']['hand']) + player2_throw
-        if guess not in existing_guesses:
-            return guess
-
-
-def get_player3_guess(player3_throw, existing_guesses):
-    while True:
-        guess = choice(players['player1']['hand']) + choice(players['player2']['hand']) + player3_throw
-        if guess not in existing_guesses:
-            return guess
-        
-def reset_players_attributes(players):
-    for player_key in players:
-        players[player_key]['hand'] = [0, 1, 2, 3]
-        players[player_key]['score'] = 0
-
-
-def game_start(players, key, gen_starting_player ,rotate_turns ):
-    print("-" * 60)
-    sleep(1) 
-    players['player1']['name'] = input("Hi! What's your name? ")
-    print(f"Welcome {players[key]['name']}! Let's play!")
-    print("-" * 60)
-    player_names, current_player, current_index = gen_starting_player(players)
-    print(f"{players[current_player]['name']} starts this time!")
-    print("Players choose your throw!")
-    print("-" * 60)
+            self.show_popup("Invalid input! Please try again.")
     
-    while True:
-        print(f"Jogador que comeca: {players[current_player]['name']}")
-        player1_throw = get_player_throw(players, "player1")
-        player2_throw = get_player2_throw(players, "player2")
-        player3_throw = get_player3_throw(players, "player3")
-    
-        total_of_sticks = player1_throw + player2_throw + player3_throw
-    
-        for _ in range(len(players)):
-            current_player_key = player_names[current_index]
-            existing_guesses = [players[p]['guess'] for p in player_names
-                            if players[p]['guess'] is not None]
-            
-            if current_player_key == "player1":
-                print(f"Your turn {players['player1']['name']}, what's  your guess?")
-                guess = get_player_guess()
-                players['player1']['guess'] = guess
-                existing_guesses.append(guess)
-                print(f"players{players['player1']['name']} guessed {guess}.")
-                print("-" * 60)
-                
-            elif current_player_key == "player2":
-                print(f"Your turn {players['player2']['name']}, what's your guess?")
-                guess = get_player2_guess(player2_throw, existing_guesses)
-                players['player2']['guess'] = guess
-                existing_guesses.append(guess)
-                print(f"players{players['player2']['name']} guessed {guess}.")
-                print("-" * 60)
-                
-            elif current_player_key == "player3":
-                print(f"Your turn {players['player3']['name']}, what's your guess?")
-                guess = get_player3_guess(player3_throw, existing_guesses)
-                players['player3']['guess'] = guess
-                existing_guesses.append(guess)
-                print(f"players{players['player3']['name']} guessed {guess}.")
-                print("-" * 60)
-        
-            current_index = rotate_turns(player_names, current_index)
-        
-        game_over = False
-        
-        if total_of_sticks == players['player1']['guess']:
-            print(f"You win! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}! Great guess!")
-            players['player1']['score'] += 1
-            if players['player1']['hand']:
-                players['player1']['hand'].pop()
-            if (len(players['player1']['hand']) - 1) == 0:
-                print("-" * 60)
-                print(f"CONGRATULATIONS {players['player1']['name']}! You won!")
-                print("-" * 60)
-                game_over = True
-            
-        elif total_of_sticks == players['player2']['guess']:
-            print(f"You lose! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}! {players['player2']['name']} got this one!")
-            players['player2']['score'] += 1
-            if players['player2']['hand']:
-                players['player2']['hand'].pop()
-            if (len(players['player2']['hand']) - 1) == 0:
-                print("-" * 60)
-                print(f"{players['player2']['name']} won! Better luck next time!")
-                print("-" * 60)
-                game_over = True
-            
-        elif total_of_sticks == players['player3']['guess']:
-            print(f"You lose! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}! {players['player3']['name']} got this one!")
-            players['player3']['score'] += 1
-            if players['player3']['hand']:
-                players['player3']['hand'].pop()
-            if (len(players['player3']['hand']) - 1) == 0:
-                print("-" * 60)
-                print(f"{players['player3']['name']} won! Better luck next time!")
-                print("-" * 60)
-                game_over = True
-            
+    def show_popup(self, message):
+        popup = Popup(title='Game Update',
+                    content=Label(text=message),
+                    size_hint=(None, None), size=(400, 200))
+        popup.open()
+
+class StartingPlayer(Screen):
+    def on_enter(self):
+        self.current_player_key = self.gen_starting_player(self.players)
+        if self.current_player_key == "player1":
+            self.manager.current = 'user_guess'
         else:
-            print(f"No one guessed it right! {players['player2']['name']} threw {player2_throw}. {players['player3']['name']} threw {player3_throw}. You threw {player1_throw}. Total is {total_of_sticks}")
+            self.manager.current = 'machine_guess'
+
+class UserGuess(Screen):
+    def on_enter(self):
+        self.ids.guess.opacity = 1
+        guess_value = self.ids.guess.text
+        if guess_value.isdigit():
+            guess_value = int(guess_value)
             
-        print("-"*60)
-        print(f"{players['player1']['name']}'s Score {players['player1']['score']}")
-        print(f"{players['player2']['name']}'s Score {players['player2']['score']}")
-        print(f"{players['player3']['name']}'s Score {players['player3']['score']}")
-        print("-"*60)
-        
-        print(f"Round final: {existing_guesses}")
-        
-        current_index = rotate_turns(player_names, current_index)
-        
-        #ラウンドごとに各プレイヤーの推量を初期化している。
-        for player in players:
-            players[player]['guess'] = None
-    
-        if game_over: 
-            play_again = input("Play again?").lower()  
-            if play_again not in ("yes", "y"):
-                print("See you next time!") 
-                break
+            if guess_value not in game_state.existing_guesses:
+                game_state.players['player1']['guess'] = guess_value
+                game_state.existing_guesses.append(guess_value)
             else:
-                #プレイヤースコアとハンドを初期化します。
-                reset_players_attributes(players)
-                #初プレイヤーの順番を再度決める。
-                player_names, current_player, current_index = gen_starting_player(players)
+                self.show_popup("This guess has been taken.\nPlease choose a different one.")
+        else:
+            self.show_popup("Please enter a valid number.")
 
-game_start(players, 'player1', gen_starting_player, rotate_turns)
+    def show_popup(self, message):
+        close_button = Button(text='Close', size_hint=(None, None), size=(100, 50))
+        
+        content = BoxLayout(orientation='vertical')
+        content.add_widget(Label(text=message))
+        content.add_widget(close_button)
+        
+        popup = Popup(title='Game Update',
+                    content=content,
+                    size_hint=(None, None), size=(400, 200))
+        
+        close_button.bind(on_release=popup.dismiss)
+        
+        popup.open()
+
+class MachineGuess(Screen):
+    def on_enter(self):
+        if game_state.current_player_key == 'player2':
+            game_state.get_player2_guess(game_state.players['player2']['throw'], game_state.existing_guesses)
+            self.show_popup(f"{game_state.players['player2']['name']} guessed {game_state.players['player2']['guess']}!")
+            game_state.rotate_turns(game_state.player_keys, game_state.current_index)
+            self.manager.current = 'machine_guess'
+        elif game_state.current_player_key == 'player3':
+            game_state.get_player3_guess(game_state.players['player3']['throw'], game_state.existing_guesses)
+            self.show_popup(f"{game_state.players['player3']['name']} guessed {game_state.players['player3']['guess']}!")
+            game_state.rotate_turns(game_state.player_keys, game_state.current_index)
+        else:
+            self.manager.current = 'user_guess'
+
+class Winner(Screen):
+    def on_enter(self):
+        self.manager.current = 'game_over'
+
+class Score(Screen):
+    def on_enter(self):
+        self.manager.current = 'game_throw'
+
+class GameOver(Screen):
+    def on_enter(self):
+        play_again = ("Play again? (yes/no): ").strip().lower()
+        if play_again not in ("yes", "y"):
+            print("See you next time!") 
+            self.manager.current = 'goodbye'
+        else:
+            game_state.reset_players_attributes(game_state.players)
+            game_state.gen_starting_player(game_state.players)
+            self.manager.current = 'game_throw'
+class GuessingGameApp(App):
+    def build(self):
+        self.game_state = GameState()
+        sm = ScreenManager()
+        sm.add_widget(MainScreen(name='main'))
+        sm.add_widget(NameInputScreen(name='name_input'))
+        sm.add_widget(GameThrow(name='game_throw'))
+        sm.add_widget(StartingPlayer(name='starting_player'))
+        sm.add_widget(UserGuess(name='user_guess'))
+        sm.add_widget(MachineGuess(name='machine_guess'))
+        sm.add_widget(Winner(name='winner'))
+        sm.add_widget(Score(name='score'))
+        sm.add_widget(GameOver(name='game_over'))
+        return sm
+
+if __name__ == '__main__':
+    GuessingGameApp().run()
